@@ -1,0 +1,208 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+    tags: ["v*"]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Lint
+        run: npm run lint
+        working-directory: frontend
+
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "src/uv.lock"
+          python-version: '3.14'
+
+      - name: Install Python dependencies
+        run: cd src && uv sync --frozen --group dev
+
+      - name: Lint with ruff
+        run: |
+          cd src
+          uv run ruff check
+
+      - name: Check formatting
+        run: |
+          cd src
+          uv run ruff format --check .
+
+      - name: Install geodjango dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libproj-dev gdal-bin
+
+      - name: Run mypy
+        run: |
+          cd src
+          uv run mypy .
+        env:
+          SECRET_KEY: typecheck-secret-key
+          ALLOWED_HOSTS: localhost
+          DATABASE_NAME: typecheck
+          DATABASE_USER: typecheck
+          DATABASE_PASSWORD: typecheck
+          DATABASE_HOST: localhost
+          MEDIA_PATH: /tmp/media
+          STATIC_PATH: /tmp/static
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e  # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run tests
+        run: npm run test:ci
+        working-directory: frontend
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ../test-results/jest/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: jest-test-results
+          path: test-results/jest/
+
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5
+        env:
+          POSTGRES_USER: ci_user
+          POSTGRES_DB: ci_test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ci_user -d ci_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "src/uv.lock"
+          python-version: '3.14'
+
+      - name: Install Python dependencies
+        run: cd src && uv sync --frozen --group dev
+
+      - name: Install geodjango dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libproj-dev gdal-bin
+
+      - name: Run tests
+        run: |
+          mkdir -p test-results/pytest
+          cd src
+          uv run pytest -c pytest.github.ini --durations 10 --junitxml=../test-results/pytest/junit.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: pytest-test-results
+          path: test-results/pytest/
+
+  security-sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - name: Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25  # v0.36.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          trivy-config: trivy.yaml
+          scanners: "vuln,misconfig,secret"
+          exit-code: "1"
+          format: "table"
+
+  security-iac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+        with:
+          python-version: '3.14'
+
+      - name: Audit GitHub Actions workflows
+        run: uvx zizmor==1.25.2 --min-confidence medium .
+
+  security-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39  # v8.2.0
+        with:
+          python-version: '3.14'
+
+      - name: Audit Python dependencies
+        run: cd src && uv export --frozen --no-dev | uvx pip-audit==2.10.0 -r /dev/stdin
+
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
+        working-directory: frontend
+
+  deploy:
+    needs: [lint-frontend, lint-backend, test-frontend, test-backend, security-sca, security-iac, security-deps]
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/deploy.yml
+    secrets:
+      SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+

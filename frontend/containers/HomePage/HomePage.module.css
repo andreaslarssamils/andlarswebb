@@ -1,0 +1,6 @@
+.Container {
+    min-height: 100vh;
+    padding: 32px 20px;
+    background: var(--term-bg);
+    font-family: var(--term-font);
+}

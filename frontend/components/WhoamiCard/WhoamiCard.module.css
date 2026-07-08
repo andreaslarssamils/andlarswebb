@@ -1,0 +1,66 @@
+.Root {
+    font-family: var(--term-font);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--term-green);
+}
+
+.Prompt {
+    margin: 4px 0;
+    color: var(--term-green);
+}
+
+.Symbol {
+    margin-right: 8px;
+}
+
+.Card {
+    margin: 12px 0;
+    padding: 18px 22px;
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    background: var(--term-surface);
+}
+
+.Brace {
+    color: var(--term-punct);
+}
+
+.Row {
+    padding-left: 28px;
+    color: var(--term-punct);
+}
+
+.Key {
+    color: var(--term-key);
+}
+
+.Str {
+    color: var(--term-amber);
+}
+
+.Cursor {
+    display: inline-block;
+    width: 9px;
+    height: 1.05em;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+    background: var(--term-green);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .Cursor {
+        animation: blink 1s steps(1) infinite;
+    }
+}
+
+@keyframes blink {
+    0%,
+    50% {
+        opacity: 1;
+    }
+    50.01%,
+    100% {
+        opacity: 0;
+    }
+}

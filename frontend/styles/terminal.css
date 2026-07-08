@@ -1,0 +1,12 @@
+:root {
+    --term-bg: #0a0e0a;
+    --term-surface: #0d120d;
+    --term-border: #1f2b1f;
+    --term-green: #4ade80;
+    --term-amber: #e6b15c;
+    --term-key: #8ec7a2;
+    --term-punct: #7a8d7c;
+    --term-font:
+        'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
+        Consolas, 'Liberation Mono', monospace;
+}

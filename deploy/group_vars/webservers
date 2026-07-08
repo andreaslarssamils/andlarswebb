@@ -1,0 +1,8 @@
+---
+python_version: python3
+ansistrano_deploy_to: /mnt/persist/www/andlarswebb
+database_name: andlarswebb
+database_user: andlarswebb
+project_slug: andlarswebb
+domain_stage: stage.example.com
+domain_prod: example.com
