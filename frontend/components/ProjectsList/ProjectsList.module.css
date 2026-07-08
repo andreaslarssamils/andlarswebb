@@ -1,0 +1,73 @@
+.Root {
+    font-family: var(--term-font);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--term-green);
+}
+
+.Prompt {
+    margin: 4px 0 12px;
+    color: var(--term-green);
+}
+
+.Symbol {
+    margin-right: 8px;
+}
+
+.List {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.Card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    background: var(--term-surface);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s ease;
+}
+
+a.Card:hover {
+    border-color: var(--term-green);
+}
+
+.Thumb {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid var(--term-border);
+}
+
+.Body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.Title {
+    color: var(--term-green);
+}
+
+.Desc {
+    margin-top: 2px;
+    color: var(--term-punct);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.Arrow {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--term-green);
+}
