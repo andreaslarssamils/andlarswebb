@@ -7,6 +7,6 @@
     --term-key: #8ec7a2;
     --term-punct: #7a8d7c;
     --term-font:
-        'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo,
-        Consolas, 'Liberation Mono', monospace;
+        var(--font-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular,
+        'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 }

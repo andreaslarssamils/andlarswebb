@@ -1,9 +1,12 @@
-import { Inter } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
 import '../index.css';
 // import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] });
+const jetbrainsMono = JetBrains_Mono({
+    subsets: ['latin'],
+    variable: '--font-mono',
+});
 
 export default async function RootLayout({ children, ...props }) {
     const headerList = await headers();
@@ -14,8 +17,8 @@ export default async function RootLayout({ children, ...props }) {
     // })
 
     return (
-        <html lang="en">
-            <body className={inter.className}>{children}</body>
+        <html lang="en" className={jetbrainsMono.variable}>
+            <body>{children}</body>
         </html>
     );
 }
