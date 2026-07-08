@@ -1,0 +1,82 @@
+.Root {
+    font-family: var(--term-font);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--term-green);
+}
+
+.Prompt {
+    margin: 4px 0;
+    color: var(--term-green);
+}
+
+.Symbol {
+    margin-right: 8px;
+}
+
+.Card {
+    margin: 12px 0;
+    padding: 18px 22px;
+    border: 1px solid var(--term-border);
+    border-radius: 8px;
+    background: var(--term-surface);
+}
+
+.Prose {
+    color: var(--term-key);
+}
+
+.Prose p {
+    margin: 0 0 12px;
+}
+
+.Prose p:last-child {
+    margin-bottom: 0;
+}
+
+.Prose a {
+    color: var(--term-amber);
+    text-decoration: underline;
+}
+
+.Prose ul,
+.Prose ol {
+    margin: 0 0 12px;
+    padding-left: 24px;
+}
+
+.Prose li {
+    margin: 2px 0;
+}
+
+.Prose strong {
+    color: var(--term-green);
+    font-weight: 600;
+}
+
+.Prose em {
+    color: var(--term-key);
+    font-style: italic;
+}
+
+.Prose h2,
+.Prose h3 {
+    margin: 16px 0 8px;
+    color: var(--term-green);
+    font-weight: 600;
+}
+
+.Prose h2 {
+    font-size: 17px;
+}
+
+.Prose h3 {
+    font-size: 15px;
+}
+
+.Prose code {
+    color: var(--term-amber);
+    background: var(--term-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
