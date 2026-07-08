@@ -15,9 +15,13 @@ const HomePage = ({ siteSetting, aboutMe, projects }) => {
                 openTo={siteSetting?.openTo}
             />
 
-            <AboutMe html={aboutMe} />
+            <section id="about" className={s.Section}>
+                <AboutMe html={aboutMe} />
+            </section>
 
-            <ProjectsList projects={projects} />
+            <section id="work" className={s.Section}>
+                <ProjectsList projects={projects} />
+            </section>
         </div>
     );
 };

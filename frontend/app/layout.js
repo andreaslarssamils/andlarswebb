@@ -1,5 +1,6 @@
 import { JetBrains_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
+import Menu from '../components/Menu';
 import '../index.css';
 // import './globals.css'
 
@@ -18,7 +19,10 @@ export default async function RootLayout({ children, ...props }) {
 
     return (
         <html lang="en" className={jetbrainsMono.variable}>
-            <body>{children}</body>
+            <body>
+                <Menu />
+                {children}
+            </body>
         </html>
     );
 }

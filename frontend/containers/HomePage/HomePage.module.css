@@ -4,3 +4,7 @@
     background: var(--term-bg);
     font-family: var(--term-font);
 }
+
+.Section {
+    scroll-margin-top: 72px;
+}
